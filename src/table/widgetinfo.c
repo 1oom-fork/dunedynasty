@@ -13,7 +13,7 @@
 
 WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 	{ /* 0 */
-		/* index       */ 1,
+		/* index       */ WIDGET_INDEX_MENTAT,
 		/* clickProc   */ &MenuBar_ClickMentat,
 		/* shortcut    */ SCANCODE_F1,
 		/* flags       */ 1237,
@@ -26,7 +26,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_MENUBAR,
 	},
 	{ /* 1 */
-		/* index       */ 2,
+		/* index       */ WIDGET_INDEX_OPTIONS,
 		/* clickProc   */ &MenuBar_ClickOptions,
 		/* shortcut    */ SCANCODE_F2,
 		/* flags       */ 1237,
@@ -39,7 +39,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_MENUBAR,
 	},
 	{ /* 2 */
-		/* index       */ 3,
+		/* index       */ WIDGET_INDEX_NAME,
 		/* clickProc   */ &GUI_Widget_Name_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 17605,
@@ -52,7 +52,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 3 */
-		/* index       */ 6,
+		/* index       */ WIDGET_INDEX_PICTURE,
 		/* clickProc   */ &GUI_Widget_Picture_Click,
 		/* shortcut    */ SCANCODE_F3,
 		/* flags       */ 17605,
@@ -65,7 +65,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 4 */
-		/* index       */ 4,
+		/* index       */ WIDGET_INDEX_REPAIR_UPGRADE,
 		/* clickProc   */ &GUI_Widget_RepairUpgrade_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 17605,
@@ -78,7 +78,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 5 */
-		/* index       */ 5,
+		/* index       */ WIDGET_INDEX_BUILD_PLACE,
 		/* clickProc   */ &GUI_Widget_SpriteTextButton_Click,
 		/* shortcut    */ SCANCODE_P,
 		/* flags       */ 17605,
@@ -91,7 +91,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 6 */
-		/* index       */ 7,
+		/* index       */ WIDGET_INDEX_CANCEL,
 		/* clickProc   */ &GUI_Widget_Cancel_Click,
 		/* shortcut    */ SCANCODE_ESCAPE,
 		/* flags       */ 17605,
@@ -104,7 +104,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 7 */
-		/* index       */ 8,
+		/* index       */ WIDGET_INDEX_UNIT_COMMAND_1,
 		/* clickProc   */ &GUI_Widget_TextButton_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 17605,
@@ -117,7 +117,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 8 */
-		/* index       */ 9,
+		/* index       */ WIDGET_INDEX_UNIT_COMMAND_2,
 		/* clickProc   */ &GUI_Widget_TextButton_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 17605,
@@ -130,7 +130,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 9 */
-		/* index       */ 10,
+		/* index       */ WIDGET_INDEX_UNIT_COMMAND_3,
 		/* clickProc   */ &GUI_Widget_TextButton_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 17605,
@@ -143,7 +143,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 10 */
-		/* index       */ 11,
+		/* index       */ WIDGET_INDEX_UNIT_COMMAND_4,
 		/* clickProc   */ &GUI_Widget_TextButton_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 17605,
@@ -156,7 +156,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 11 */
-		/* index       */ 39,
+		/* index       */ WIDGET_INDEX_SCROLL_UP,
 		/* clickProc   */ &Viewport_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 0x0F40, /* Was 0x4F00 == 20224.  Scroll up widget needed for screen edge scrolling. */
@@ -169,7 +169,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_MAIN,
 	},
 	{ /* 12 */
-		/* index       */ 40,
+		/* index       */ WIDGET_INDEX_SCROLL_RIGHT,
 		/* clickProc   */ &Viewport_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 0x0F40, /* Was 0x4F00 == 20224.  Scroll right widget needed for screen edge scrolling. */
@@ -182,7 +182,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_MAIN,
 	},
 	{ /* 13 */
-		/* index       */ 41,
+		/* index       */ WIDGET_INDEX_SCROLL_LEFT,
 		/* clickProc   */ &Viewport_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 0x0F40, /* Was 0x4F00 == 20224. */
@@ -195,7 +195,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_MAIN,
 	},
 	{ /* 14 */
-		/* index       */ 42,
+		/* index       */ WIDGET_INDEX_SCROLL_DOWN,
 		/* clickProc   */ &Viewport_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 0x0F40, /* Was 0x4F00 == 20224.  Scroll down widget needed for screen edge scrolling due to minimap. */
@@ -208,7 +208,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_MAIN,
 	},
 	{ /* 15 */
-		/* index       */ 43,
+		/* index       */ WIDGET_INDEX_VIEWPORT,
 		/* clickProc   */ &Viewport_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 0x4F40, /* Was 0x4F00 == 20224. */
@@ -221,7 +221,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_VIEWPORT,
 	},
 	{ /* 16 */
-		/* index       */ 44,
+		/* index       */ WIDGET_INDEX_MINIMAP,
 		/* clickProc   */ &Viewport_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 0x4F40, /* 0x4F40 == 20288. */
@@ -234,7 +234,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 		/* div         */ SCREENDIV_SIDEBAR,
 	},
 	{ /* 17 */
-		/* index       */ 45,
+		/* index       */ WIDGET_INDEX_VIEWPORT_FALLBACK,
 		/* clickProc   */ &Viewport_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 0x4F40, /* Was 0x4F00 == 20224. */

@@ -28,6 +28,29 @@ enum GameWidgetType {
 	GAME_WIDGET_INVALID             = 0xFFFF
 };
 
+enum GameWidgetIndex {
+	WIDGET_INDEX_MENTAT              = 1,
+	WIDGET_INDEX_OPTIONS             = 2,
+	WIDGET_INDEX_NAME                = 3,
+	WIDGET_INDEX_PICTURE             = 6,
+	WIDGET_INDEX_REPAIR_UPGRADE      = 4,
+	WIDGET_INDEX_BUILD_PLACE         = 5,
+	WIDGET_INDEX_CANCEL              = 7,
+	WIDGET_INDEX_UNIT_COMMAND_1      = 8,
+	WIDGET_INDEX_UNIT_COMMAND_2      = 9,
+	WIDGET_INDEX_UNIT_COMMAND_3      = 10,
+	WIDGET_INDEX_UNIT_COMMAND_4      = 11,
+	WIDGET_INDEX_SCROLL_UP           = 39,
+	WIDGET_INDEX_SCROLL_RIGHT        = 40,
+	WIDGET_INDEX_SCROLL_LEFT         = 41,
+	WIDGET_INDEX_SCROLL_DOWN         = 42,
+	WIDGET_INDEX_VIEWPORT            = 43,
+	WIDGET_INDEX_MINIMAP             = 44,
+	WIDGET_INDEX_VIEWPORT_FALLBACK   = 45,
+
+	WIDGET_INDEX_INVALID             = 0xFFFF
+};
+
 typedef struct WidgetInfo {
 	int16 index;            /*!< ?? */
 	ClickProc *clickProc;   /*!< Function to execute when widget is pressed. */

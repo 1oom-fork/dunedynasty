@@ -314,7 +314,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 	Structure *s;
 	House *h;
 	Widget *buttons[4];
-	Widget *widget24, *widget28, *widget2C, *widget30, *widget34;
+	Widget *widget_repairUpgrade, *widget_portrait, *widget_ap_menu, *widget_cancelClick, *widget_name;
 
 	o  = NULL;
 	u  = NULL;
@@ -393,24 +393,24 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 
 		loc06 = Widget_SetCurrentWidget(6);
 
-		widget30 = GUI_Widget_Get_ByIndex(w, 7);
-		GUI_Widget_MakeInvisible(widget30);
+		widget_cancelClick = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_CANCEL);
+		GUI_Widget_MakeInvisible(widget_cancelClick);
 
-		widget24 = GUI_Widget_Get_ByIndex(w, 4);
-		GUI_Widget_MakeInvisible(widget24);
+		widget_repairUpgrade = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_REPAIR_UPGRADE);
+		GUI_Widget_MakeInvisible(widget_repairUpgrade);
 
-		widget28 = GUI_Widget_Get_ByIndex(w, 6);
-		GUI_Widget_MakeInvisible(widget28);
+		widget_portrait = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_PICTURE);
+		GUI_Widget_MakeInvisible(widget_portrait);
 
-		widget2C = GUI_Widget_Get_ByIndex(w, 5);
-		GUI_Widget_MakeInvisible(widget2C);
+		widget_ap_menu = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_BUILD_PLACE);
+		GUI_Widget_MakeInvisible(widget_ap_menu);
 
-		widget34 = GUI_Widget_Get_ByIndex(w, 3);
-		GUI_Widget_MakeInvisible(widget34);
+		widget_name = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_NAME);
+		GUI_Widget_MakeInvisible(widget_name);
 
 		/* Create the 4 buttons */
 		for (int i = 0; i < 4; i++) {
-			buttons[i] = GUI_Widget_Get_ByIndex(w, i + 8);
+			buttons[i] = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_UNIT_COMMAND_1 + i);
 			GUI_Widget_MakeInvisible(buttons[i]);
 		}
 
@@ -449,7 +449,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 						 (s->o.type == STRUCTURE_PALACE && s->countDown == 0) ||
 						 (s->o.type == STRUCTURE_STARPORT && !House_StarportQueueEmpty(h)) ||
 						 (s->o.type == STRUCTURE_REPAIR && s->o.linkedID != 0xFF))) {
-					GUI_Widget_MakeVisible(widget28);
+					GUI_Widget_MakeVisible(widget_portrait);
 				}
 				/* Fall through */
 			case 7: /* Placement */
@@ -491,7 +491,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 					const uint16 *actions;
 					uint16 actionCurrent;
 
-					GUI_Widget_MakeVisible(widget34);
+					GUI_Widget_MakeVisible(widget_name);
 
 					actionCurrent = (u->nextActionID != ACTION_INVALID) ? u->nextActionID : u->actionID;
 
@@ -520,59 +520,59 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 				} break;
 
 				case 3: /* Structure */
-					GUI_Widget_MakeVisible(widget34);
+					GUI_Widget_MakeVisible(widget_name);
 
 					if (o->flags.s.upgrading) {
-						widget24->stringID = STR_UPGRADING;
+						widget_repairUpgrade->stringID = STR_UPGRADING;
 
-						GUI_Widget_MakeVisible(widget24);
-						GUI_Widget_MakeSelected(widget24, false);
+						GUI_Widget_MakeVisible(widget_repairUpgrade);
+						GUI_Widget_MakeSelected(widget_repairUpgrade, false);
 					} else if (o->hitpoints != oi->hitpoints) {
 						if (o->flags.s.repairing) {
-							widget24->stringID = STR_REPAIRING;
+							widget_repairUpgrade->stringID = STR_REPAIRING;
 
-							GUI_Widget_MakeVisible(widget24);
-							GUI_Widget_MakeSelected(widget24, false);
+							GUI_Widget_MakeVisible(widget_repairUpgrade);
+							GUI_Widget_MakeSelected(widget_repairUpgrade, false);
 						} else {
-							widget24->stringID = STR_REPAIR;
+							widget_repairUpgrade->stringID = STR_REPAIR;
 
-							GUI_Widget_MakeVisible(widget24);
-							/* GUI_Widget_MakeNormal(widget24, false); */
+							GUI_Widget_MakeVisible(widget_repairUpgrade);
+							/* GUI_Widget_MakeNormal(widget_repairUpgrade, false); */
 						}
 					} else if (s->upgradeTimeLeft != 0) {
-						widget24->stringID = STR_UPGRADE;
+						widget_repairUpgrade->stringID = STR_UPGRADE;
 
-						GUI_Widget_MakeVisible(widget24);
-						/* GUI_Widget_MakeNormal(widget24, false); */
+						GUI_Widget_MakeVisible(widget_repairUpgrade);
+						/* GUI_Widget_MakeNormal(widget_repairUpgrade, false); */
 					}
 
 					if ((o->type == STRUCTURE_PALACE && s->countDown == 0)
 					 || (o->type != STRUCTURE_STARPORT && oi->flags.factory)
 					 || (o->type == STRUCTURE_STARPORT
 						 && (h->starportLinkedID == UNIT_INDEX_INVALID || !House_StarportQueueEmpty(h)))) {
-						GUI_Widget_MakeVisible(widget2C);
+						GUI_Widget_MakeVisible(widget_ap_menu);
 					}
 
 					ActionPanel_DrawStructureDescription(s);
 					break;
 
 				case 4: /* Attack */
-					GUI_Widget_MakeVisible(widget30);
+					GUI_Widget_MakeVisible(widget_cancelClick);
 					ActionPanel_DrawActionDescription(STR_SELECTTARGET, 19, 36, g_curWidgetFGColourBlink);
 					break;
 
 				case 5: /* Movement */
-					GUI_Widget_MakeVisible(widget30);
+					GUI_Widget_MakeVisible(widget_cancelClick);
 					ActionPanel_DrawActionDescription(STR_SELECTDESTINATION, 19, 36, g_curWidgetFGColourBlink);
 					break;
 
 				case 6: /* Harvest */
-					GUI_Widget_MakeVisible(widget30);
+					GUI_Widget_MakeVisible(widget_cancelClick);
 					ActionPanel_DrawActionDescription(STR_SELECTPLACE_TOHARVEST, 19, 36, g_curWidgetFGColourBlink);
 					break;
 
 				case 7: /* Placement */
-					GUI_Widget_MakeVisible(widget30);
+					GUI_Widget_MakeVisible(widget_cancelClick);
 					ActionPanel_DrawActionDescription(STR_SELECTLOCATION_TOBUILD, 19, 44, g_curWidgetFGColourBlink);
 					break;
 
@@ -588,11 +588,11 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 	}
 
 	if (actionType != 0) {
-		GUI_Widget_Draw(widget24);
-		GUI_Widget_Draw(widget28);
-		GUI_Widget_Draw(widget2C);
-		GUI_Widget_Draw(widget30);
-		GUI_Widget_Draw(widget34);
+		GUI_Widget_Draw(widget_repairUpgrade);
+		GUI_Widget_Draw(widget_portrait);
+		GUI_Widget_Draw(widget_ap_menu);
+		GUI_Widget_Draw(widget_cancelClick);
+		GUI_Widget_Draw(widget_name);
 
 		for (int i = 0; i < 4; i++) {
 			GUI_Widget_Draw(buttons[i]);
