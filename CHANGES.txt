@@ -1,6 +1,11 @@
 Dune Dynasty
 ============
 
+Version 1.6.0, 2015-02-03
+
+  - Version changed to 1.6.0 to reflect all those undocumented changes
+    that were added for 2013-2015
+
 Version 1.5.7, 2013-08-18
 -------------------------
 
