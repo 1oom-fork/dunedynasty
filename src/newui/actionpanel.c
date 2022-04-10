@@ -169,7 +169,8 @@ ActionPanel_DrawPortrait(uint16 action_type, enum ShapeID shapeID)
 			return;
 	}
 
-	Shape_Draw(shapeID, 2, 9, WINDOWID_ACTIONPANEL_FRAME, 0x4000);
+	const WidgetInfo *wi = &g_table_gameWidgetInfo[GAME_WIDGET_PICTURE];
+	Shape_Draw(shapeID, wi->offsetX, wi->offsetY, 0, 0x4000);
 }
 
 void
