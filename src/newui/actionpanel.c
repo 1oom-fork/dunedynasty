@@ -173,10 +173,21 @@ ActionPanel_DrawPortrait(uint16 action_type, enum ShapeID shapeID)
 	Shape_Draw(shapeID, wi->offsetX, wi->offsetY, 0, 0x4000);
 }
 
+static void
+ActionPanel_HealthBar_Dimensions(uint16 *r_x, uint16 *r_y, uint16 *r_w, uint16 *r_h)
+{
+	const WidgetInfo *wi = &g_table_gameWidgetInfo[GAME_WIDGET_PICTURE];
+	*r_x = wi->offsetX + 34;
+	*r_y = wi->offsetY;
+	*r_w = 24;
+	*r_h = 7;
+}
+
 void
 ActionPanel_DrawHealthBar(int curr, int max)
 {
-	const WidgetProperties *wi = &g_widgetProperties[WINDOWID_ACTIONPANEL_FRAME];
+	uint16 x, y, w, h;
+	ActionPanel_HealthBar_Dimensions(&x, &y, &w, &h);
 
 	if (curr > max)
 		curr = max;
@@ -184,20 +195,17 @@ ActionPanel_DrawHealthBar(int curr, int max)
 	if (max < 1)
 		max = 1;
 
-	const int x = wi->xBase + 37;
-	const int y = wi->yBase + 10;
-	const int w = max(1, 24 * curr / max);
-	const int h = 7;
+	const int wh = max(1, w * curr / max);
 
 	uint8 colour = 4;
 	if (curr <= max / 2) colour = 5;
 	if (curr <= max / 4) colour = 8;
 
-	Prim_DrawBorder(x - 1, y - 1, 24 + 2, h + 2, 1, false, true, 1);
-	Prim_FillRect_i(x, y, x + w - 1, y + h - 1, colour);
+	Prim_DrawBorder(x, y, w + 2, h + 2, 1, false, true, 1);
+	Prim_FillRect_i(x + 1, y + 1, x + wh, y + h, colour);
 
-	Shape_Draw(SHAPE_HEALTH_INDICATOR, 36, 18, WINDOWID_ACTIONPANEL_FRAME, 0x4000);
-	GUI_DrawText_Wrapper(String_Get_ByIndex(STR_DMG), wi->xBase + 40, wi->yBase + 23, 29, 0, 0x11);
+	Shape_Draw(SHAPE_HEALTH_INDICATOR, x, y + 9, 0, 0x4000);
+	GUI_DrawText_Wrapper(String_Get_ByIndex(STR_DMG), x + 4, y + 14, 29, 0, 0x11);
 }
 
 void
