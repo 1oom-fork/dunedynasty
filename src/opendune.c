@@ -347,7 +347,7 @@ GameLoop_TweakWidgetDimensions(void)
 	if ((g_aspect_correction == ASPECT_RATIO_CORRECTION_PARTIAL || g_aspect_correction == ASPECT_RATIO_CORRECTION_AUTO) &&
 			(110 - 40 + 6 + 12 < sidebar->height - 16 - 64)) {
 		g_table_gameWidgetInfo[GAME_WIDGET_PICTURE].height = 23;
-		g_table_gameWidgetInfo[GAME_WIDGET_BUILD_PLACE].offsetY = 87 - 40 + 2 + 3;
+		g_table_gameWidgetInfo[GAME_WIDGET_BUILD_PLACE].offsetY = 120 - 40 + 8 + 3;
 		g_table_gameWidgetInfo[GAME_WIDGET_BUILD_PLACE].height = sidebar->height - g_table_gameWidgetInfo[GAME_WIDGET_BUILD_PLACE].offsetY - (14 + g_table_gameWidgetInfo[GAME_WIDGET_MINIMAP].height) - 1;
 		g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].offsetY = 76 - 40 + 1;
 		g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].height = 12;
@@ -362,7 +362,7 @@ GameLoop_TweakWidgetDimensions(void)
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_4].height = 12;
 	} else {
 		g_table_gameWidgetInfo[GAME_WIDGET_PICTURE].height = 24;
-		g_table_gameWidgetInfo[GAME_WIDGET_BUILD_PLACE].offsetY = 87 - 40 + 2;
+		g_table_gameWidgetInfo[GAME_WIDGET_BUILD_PLACE].offsetY = 120 - 40 + 2;
 		g_table_gameWidgetInfo[GAME_WIDGET_BUILD_PLACE].height = sidebar->height - g_table_gameWidgetInfo[GAME_WIDGET_BUILD_PLACE].offsetY - (14 + g_table_gameWidgetInfo[GAME_WIDGET_MINIMAP].height) - 1;
 		g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].offsetY = 76 - 40;
 		g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].height = 10;
