@@ -418,29 +418,9 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 	}
 
 	if (actionType > 1) {
-		uint16 stringID = STR_NULL;
+		ActionPanel_DrawTitle(actionType, oi);
+
 		uint16 spriteID = 0xFFFF;
-
-		switch (actionType) {
-			case 4: stringID = STR_TARGET; break; /* Attack */
-			case 5: stringID = STR_MOVEMENT; break; /* Movement */
-			case 6: stringID = STR_HARVEST;  break; /* Harvest */
-
-			case 2: /* Unit */
-			case 3: /* Structure */
-			case 7: /* Placement */
-			case 8: /* House Missile */
-				stringID = oi->stringID_abbrev;
-				break;
-
-			default: break;
-		}
-
-		if (stringID != STR_NULL) {
-			const WidgetInfo *wi = &g_table_gameWidgetInfo[GAME_WIDGET_NAME];
-
-			GUI_DrawText_Wrapper(String_Get_ByIndex(stringID), wi->offsetX + wi->width/2, wi->offsetY + 1, 29, 0, 0x111);
-		}
 
 		switch (actionType) {
 			case 3: /* Structure */

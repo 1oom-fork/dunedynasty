@@ -106,6 +106,43 @@ ActionPanel_ProductionListHeight(const Widget *widget)
 
 /*--------------------------------------------------------------*/
 
+static void
+ActionPanel_Title_Dimensions(uint16 *r_x, uint16 *r_y, uint16 *r_w, uint16 *r_h)
+{
+	*r_x = 16;
+	*r_y = 2;
+	*r_w = 64;
+	*r_h = 6;
+}
+
+void
+ActionPanel_DrawTitle(uint16 actionType, const ObjectInfo *oi)
+{
+	uint16 stringID = STR_NULL;
+
+	switch (actionType) {
+		case 4: stringID = STR_TARGET; break; /* Attack */
+		case 5: stringID = STR_MOVEMENT; break; /* Movement */
+		case 6: stringID = STR_HARVEST;  break; /* Harvest */
+
+		case 2: /* Unit */
+		case 3: /* Structure */
+		case 7: /* Placement */
+		case 8: /* House Missile */
+			stringID = oi->stringID_abbrev;
+			break;
+
+		default:
+			break;
+	}
+
+	if (stringID != STR_NULL) {
+		uint16 x, y, w, h;
+		ActionPanel_Title_Dimensions(&x, &y, &w, &h);
+		GUI_DrawText_Wrapper(String_Get_ByIndex(stringID), x + w/2, y + 1, 29, 0, 0x111);
+	}
+}
+
 void
 ActionPanel_DrawPortrait(uint16 action_type, enum ShapeID shapeID)
 {
