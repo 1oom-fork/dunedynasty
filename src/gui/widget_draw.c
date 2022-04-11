@@ -533,7 +533,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 						GUI_Widget_MakeVisible(widget_ap_menu);
 					}
 
-					ActionPanel_DrawStructureDescription(s);
+					ActionPanel_DrawStructureDescription(widget_status, s);
 					break;
 
 				case 4: /* Attack */
