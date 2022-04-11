@@ -314,7 +314,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 	Structure *s;
 	House *h;
 	Widget *buttons[4];
-	Widget *widget_repairUpgrade, *widget_portrait, *widget_ap_menu, *widget_cancelClick, *widget_name;
+	Widget *widget_repairUpgrade, *widget_portrait, *widget_ap_menu, *widget_cancelClick, *widget_status;
 
 	o  = NULL;
 	u  = NULL;
@@ -405,8 +405,8 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 		widget_ap_menu = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_BUILD_PLACE);
 		GUI_Widget_MakeInvisible(widget_ap_menu);
 
-		widget_name = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_NAME);
-		GUI_Widget_MakeInvisible(widget_name);
+		widget_status = GUI_Widget_Get_ByIndex(w, WIDGET_INDEX_STATUS);
+		GUI_Widget_MakeInvisible(widget_status);
 
 		/* Create the 4 buttons */
 		for (int i = 0; i < 4; i++) {
@@ -429,7 +429,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 						 (s->o.type == STRUCTURE_PALACE && s->countDown == 0) ||
 						 (s->o.type == STRUCTURE_STARPORT && !House_StarportQueueEmpty(h)) ||
 						 (s->o.type == STRUCTURE_REPAIR && s->o.linkedID != 0xFF))) {
-					GUI_Widget_MakeVisible(widget_portrait);
+					GUI_Widget_MakeVisible(widget_status);
 				}
 				/* Fall through */
 			case 7: /* Placement */
@@ -471,7 +471,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 					const uint16 *actions;
 					uint16 actionCurrent;
 
-					GUI_Widget_MakeVisible(widget_name);
+					GUI_Widget_MakeVisible(widget_portrait);
 
 					actionCurrent = (u->nextActionID != ACTION_INVALID) ? u->nextActionID : u->actionID;
 
@@ -500,7 +500,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 				} break;
 
 				case 3: /* Structure */
-					GUI_Widget_MakeVisible(widget_name);
+					GUI_Widget_MakeVisible(widget_portrait);
 
 					if (o->flags.s.upgrading) {
 						widget_repairUpgrade->stringID = STR_UPGRADING;
@@ -572,7 +572,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 		GUI_Widget_Draw(widget_portrait);
 		GUI_Widget_Draw(widget_ap_menu);
 		GUI_Widget_Draw(widget_cancelClick);
-		GUI_Widget_Draw(widget_name);
+		GUI_Widget_Draw(widget_status);
 
 		for (int i = 0; i < 4; i++) {
 			GUI_Widget_Draw(buttons[i]);

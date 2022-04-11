@@ -7,7 +7,7 @@
 enum GameWidgetType {
 	GAME_WIDGET_MENTAT              = 0,
 	GAME_WIDGET_OPTIONS             = 1,
-	GAME_WIDGET_NAME                = 2,
+	GAME_WIDGET_STATUS              = 2,
 	GAME_WIDGET_PICTURE             = 3,
 	GAME_WIDGET_REPAIR_UPGRADE      = 4,
 	GAME_WIDGET_BUILD_PLACE         = 5,
@@ -31,7 +31,7 @@ enum GameWidgetType {
 enum GameWidgetIndex {
 	WIDGET_INDEX_MENTAT              = 1,
 	WIDGET_INDEX_OPTIONS             = 2,
-	WIDGET_INDEX_NAME                = 3,
+	WIDGET_INDEX_STATUS              = 3,
 	WIDGET_INDEX_PICTURE             = 6,
 	WIDGET_INDEX_REPAIR_UPGRADE      = 4,
 	WIDGET_INDEX_BUILD_PLACE         = 5,

@@ -354,6 +354,7 @@ GameLoop_TweakWidgetDimensions(void)
 		g_table_gameWidgetInfo[GAME_WIDGET_CANCEL].height = 12;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_1].offsetY = 77 - 40;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_1].height = 12;
+		g_table_gameWidgetInfo[GAME_WIDGET_STATUS].offsetY = 88 + 2 - 40 + 2;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_2].offsetY = 88 - 40 + 2;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_2].height = 12;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_3].offsetY = 99 - 40 + 4;
@@ -369,6 +370,7 @@ GameLoop_TweakWidgetDimensions(void)
 		g_table_gameWidgetInfo[GAME_WIDGET_CANCEL].height = 10;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_1].offsetY = 77 - 40;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_1].height = 10;
+		g_table_gameWidgetInfo[GAME_WIDGET_STATUS].offsetY = 88 + 2 - 40;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_2].offsetY = 88 - 40;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_2].height = 10;
 		g_table_gameWidgetInfo[GAME_WIDGET_UNIT_COMMAND_3].offsetY = 99 - 40;
