@@ -31,6 +31,7 @@ extern int g_factoryWindowTotal;
 
 extern void ActionPanel_HighlightIcon(enum HouseType houseID, int x1, int y1, bool large_icon);
 extern void ActionPanel_DrawTitle(uint16 actionType, const ObjectInfo *oi);
+extern void ActionPanel_DrawStructureStatus(Widget *w, const Structure *s);
 extern void ActionPanel_DrawPortrait(uint16 action_type, enum ShapeID shapeID);
 extern void ActionPanel_DrawHealthBar(int curr, int max);
 extern void ActionPanel_DrawStructureDescription(Widget *widget, Structure *s);

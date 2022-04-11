@@ -431,6 +431,9 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 						 (s->o.type == STRUCTURE_REPAIR && s->o.linkedID != 0xFF))) {
 					GUI_Widget_MakeVisible(widget_status);
 				}
+				if (!isNotPlayerOwned) {
+					ActionPanel_DrawStructureStatus(widget_status, s);
+				}
 				/* Fall through */
 			case 7: /* Placement */
 			case 2: /* Unit */

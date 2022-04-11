@@ -143,6 +143,169 @@ ActionPanel_DrawTitle(uint16 actionType, const ObjectInfo *oi)
 	}
 }
 
+static void
+ActionPanel_DrawPalaceStatus(Widget *widget, const Structure *s)
+{
+	enum ShapeID shapeID;
+	const char *deploy;
+
+	switch (g_productionStringID) {
+		case STR_LAUNCH:
+			shapeID = SHAPE_DEATH_HAND;
+			deploy = String_Get_ByIndex(STR_LAUNCH);
+			break;
+
+		case STR_FREMEN:
+			shapeID = SHAPE_FREMEN_SQUAD;
+			deploy = String_Get_ByIndex(STR_DEPLOY);
+			break;
+
+		case STR_SABOTEUR:
+			shapeID = SHAPE_SABOTEUR;
+			deploy = String_Get_ByIndex(STR_DEPLOY);
+			break;
+
+		default:
+			return;
+	}
+
+	int x1 = widget->offsetX;
+	int y1 = widget->offsetY;
+	int w = widget->width;
+	int h = widget->height;
+
+	Shape_Draw(shapeID, x1, y1, 0, 0x4000);
+
+	if (!s->countDown) {
+		Prim_Rect(x1 + 1.0f, y1 + 1.0f, x1 + w - 1.0f, y1 + h - 1.0f, 0xFF, 2.0f);
+	}
+
+	uint16 countdown_max = g_table_houseInfo[s->o.houseID].specialCountDown;
+	uint16 countdown_percent = 100 - s->countDown * 100 / countdown_max;
+	if (s->countDown)
+		GUI_DrawText_Wrapper(String_Get_ByIndex(STR_D_DONE), x1, y1 + 27, 0xf, 0, 0x21, countdown_percent);
+	else
+		GUI_DrawText_Wrapper(deploy, x1, y1 + 27, 0xf, 0, 0x21);
+}
+
+static void
+ActionPanel_DrawStarportStatus(Widget *widget, const Structure *s)
+{
+	House *house = House_Get_ByIndex(s->o.houseID);
+	int x1 = widget->offsetX;
+	int y1 = widget->offsetY;
+	int w = widget->width;
+	int h = widget->height;
+
+	enum ShapeID shapeID = SHAPE_CARRYALL;
+	Shape_Draw(shapeID, x1, y1, 0, 0x4000);
+
+	if (!House_StarportQueueEmpty(house)) {
+		Prim_Rect(x1 + 1.0f, y1 + 1.0f, x1 + w - 1.0f, y1 + h - 1.0f, 0xFF, 2.0f);
+	}
+
+	uint16 delivery_time = g_table_houseInfo[house->index].starportDeliveryTime;
+	GUI_DrawText_Wrapper("%ds", x1 + 36, y1 + 8, 29, 0, 0x11, delivery_time);
+	GUI_DrawText_Wrapper("Send order", x1, y1 + 27, 0xf, 0, 0x21);
+}
+
+static void
+ActionPanel_DrawFactoryStatus(Widget *widget, const Structure *s)
+{
+	int x1 = widget->offsetX;
+	int y1 = widget->offsetY;
+	int w = widget->width;
+	int h = widget->height;
+
+	if (g_productionStringID == STR_UPGRADINGD_DONE) {
+		const int percentDone = 100 - s->upgradeTimeLeft;
+
+		GUI_DrawText_Wrapper(String_Get_ByIndex(STR_UPGRADINGD_DONE),
+				x1, y1 + 7, 0xF, 0, 0x21, percentDone);
+		return;
+	}
+
+	int item;
+	for (item = 0; item < g_factoryWindowTotal; item++) {
+		if(s->objectType == g_factoryWindowItems[item].objectType){
+			break;
+		}
+	}
+
+	enum ShapeID shapeID = g_factoryWindowItems[item].shapeID;
+	Shape_Draw(shapeID, x1, y1, 0, 0x4000);
+
+	if (g_productionStringID == STR_PLACE_IT)
+		//ActionPanel_HighlightIcon(g_playerHouseID, x1, y1, large_icon);
+		Prim_Rect(x1 + 1.0f, y1 + 1.0f, x1 + w - 1.0f, y1 + h - 1.0f, 0xFF, 2.0f);
+
+	/* On hold greys out the entire icon, which has 1px borders. */
+	if (g_productionStringID == STR_ON_HOLD) {
+		float x1f = x1 + (float)w/32.0f;
+		float x2f = x1 + w - (float)w/32.0f;
+		float y1f, y2f;
+		y1f = y1 + 1.0f;
+		y2f = y1 + 23.0f;
+		Prim_FillRect_RGBA(x1f, y1f, x2f, y2f, 0x00, 0x00, 0x00, 0x80);
+	}
+
+	if (g_productionStringID == STR_D_DONE || g_productionStringID == STR_ON_HOLD) {
+		int buildTime;
+
+		if (s->o.type == STRUCTURE_CONSTRUCTION_YARD) {
+			const StructureInfo *si = &g_table_structureInfo[s->objectType];
+
+			buildTime = si->o.buildTime;
+		}
+		else {
+			const UnitInfo *ui = &g_table_unitInfo[s->objectType];
+
+			buildTime = ui->o.buildTime;
+		}
+
+		const int timeLeft = buildTime - (s->countDown + 255) / 256;
+		const int percentDone = 100 * timeLeft / buildTime;
+
+		GUI_DrawText_Wrapper(String_Get_ByIndex(g_productionStringID), x1, y1 + 27, 0xf, 0, 0x21, percentDone);
+
+		if (!timeLeft)
+			Prim_Rect(x1 + 1.0f, y1 + 1.0f, x1 + w - 1.0f, y1 + h - 1.0f, 0xFF, 2.0f);
+	}
+	else if (g_productionStringID == STR_PLACE_IT) {
+		GUI_DrawText_Wrapper(String_Get_ByIndex(g_productionStringID), x1, y1 + 27, 0xf, 0, 0x21);
+	}
+	else {
+		GUI_DrawText_Wrapper(String_Get_ByIndex(g_productionStringID), x1, y1 + 27, 0xf, 0, 0x21);
+	}
+}
+
+void
+ActionPanel_DrawStructureStatus(Widget *w, const Structure *s)
+{
+	House *h = House_Get_ByIndex(s->o.houseID);
+
+	if (g_productionStringID == STR_PLACE_IT
+	 || g_productionStringID == STR_COMPLETED
+	 || g_productionStringID == STR_ON_HOLD
+	 || g_productionStringID == STR_D_DONE
+	 || g_productionStringID == STR_UPGRADINGD_DONE) {
+		if (s->o.type != STRUCTURE_STARPORT) {
+			ActionPanel_DrawFactoryStatus(w, s);
+		}
+	}
+	if (s->o.type == STRUCTURE_STARPORT) {
+		if  (h->starportLinkedID != 0xFFFF
+		 && !House_StarportQueueEmpty(h)) {
+			ActionPanel_DrawStarportStatus(w, s);
+		}
+	}
+	if (g_productionStringID == STR_LAUNCH
+	 || g_productionStringID == STR_FREMEN
+	 || g_productionStringID == STR_SABOTEUR) {
+		ActionPanel_DrawPalaceStatus(w, s);
+	}
+}
+
 void
 ActionPanel_DrawPortrait(uint16 action_type, enum ShapeID shapeID)
 {
@@ -279,9 +442,10 @@ ActionPanel_DrawStructureDescription(Widget *widget, Structure *s)
 
 		case STRUCTURE_STARPORT:
 			if (h->starportLinkedID != 0xFFFF) {
-				GUI_DrawText_Wrapper(String_Get_ByIndex(STR_FRIGATEARRIVAL_INTMINUS_D), x, y, 29, 0, 0x11, h->starportTimeLeft);
+				if (House_StarportQueueEmpty(h))
+					GUI_DrawText_Wrapper(String_Get_ByIndex(STR_FRIGATEARRIVAL_INTMINUS_D), x, y, 29, 0, 0x11, h->starportTimeLeft);
 			} else {
-				/* GUI_DrawText_Wrapper(String_Get_ByIndex(STR_FRIGATE_INORBIT_ANDAWAITINGORDER), 18, y + 8, 29, 0, 0x11); */
+				GUI_DrawText_Wrapper(String_Get_ByIndex(STR_FRIGATE_INORBIT_ANDAWAITINGORDER), x, y, 29, 0, 0x11);
 			}
 			break;
 
@@ -859,14 +1023,6 @@ ActionPanel_HighlightIcon(enum HouseType houseID, int x1, int y1, bool large_ico
 void
 ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 {
-	if (g_productionStringID == STR_UPGRADINGD_DONE) {
-		const int percentDone = 100 - s->upgradeTimeLeft;
-
-		GUI_DrawText_Wrapper(String_Get_ByIndex(STR_UPGRADINGD_DONE),
-				widget->offsetX, widget->offsetY + 35 - 19, 0xF, 0, 0x021, percentDone);
-		return;
-	}
-
 	if (g_factoryWindowTotal < 0) {
 		Structure_InitFactoryItems(s);
 		ActionPanel_CalculateOptimalLayout(widget, (s->o.type == STRUCTURE_STARPORT));
@@ -929,83 +1085,13 @@ ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 				GUI_DrawText_Wrapper("OUT OF", xcentre, y1 +  7, 6, 0, 0x132);
 				GUI_DrawText_Wrapper("STOCK",  xcentre, y1 + 18, 6, 0, 0x132);
 			}
-		} else if (s->objectType == object_type) {
-			/* Production icon is 32x24, or stretched up to 52x39. */
-			if (g_productionStringID != STR_BUILD_IT) {
-				const bool large_icon = (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG);
-				float x1f = x1 + (float)w/32.0f;
-				float x2f = x1 + w - (float)w/32.0f;
-				float y1f, y2f;
-
-				if (g_productionStringID == STR_PLACE_IT)
-					ActionPanel_HighlightIcon(g_playerHouseID, x1, y1, large_icon);
-
-				if (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) {
-					/* On hold greys out the entire icon, which has 2px borders. */
-					if (g_productionStringID == STR_ON_HOLD) {
-						y1f = y1 + 2.0f;
-						y2f = y1 + 37.0f;
-					} else {
-						y1f = y1 + 12.0f;
-						y2f = y1f + g_fontCurrent->height + 4.0f;
-					}
-				} else {
-					/* On hold greys out the entire icon, which has 1px borders. */
-					if (g_productionStringID == STR_ON_HOLD) {
-						y1f = y1 + 1.0f;
-						y2f = y1 + 23.0f;
-					} else {
-						/* For long strings, grey strip spans the widget width. */
-						if ((g_productionStringID == STR_COMPLETED) || (g_productionStringID == STR_PLACE_IT)) {
-							x1f = widget->offsetX + 1.0f;
-							x2f = widget->offsetX + widget->width - 1.0f;
-						}
-
-						y1f = y1 + 5.0f;
-						y2f = y1f + g_fontCurrent->height + 4.0f;
-					}
-				}
-
-				Prim_FillRect_RGBA(x1f, y1f, x2f, y2f, 0x00, 0x00, 0x00, 0x80);
-			}
-
-			if (g_productionStringID == STR_D_DONE || g_productionStringID == STR_ON_HOLD) {
-				int buildTime;
-
-				if (s->o.type == STRUCTURE_CONSTRUCTION_YARD) {
-					const StructureInfo *si = &g_table_structureInfo[s->objectType];
-					buildTime = si->o.buildTime;
-				} else {
-					const UnitInfo *ui = &g_table_unitInfo[s->objectType];
-					buildTime = ui->o.buildTime;
-				}
-
-				const int timeLeft = buildTime - (s->countDown + 255) / 256;
-				const int percentDone = 100 * timeLeft / buildTime;
-
-				if ((g_productionStringID == STR_D_DONE) || !(s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG)) {
-					GUI_DrawText_Wrapper("%d%%", x1 + w / 2, y1 + (h - 10) / 2, fg, 0, 0x121, percentDone);
-				} else {
-					GUI_DrawText_Wrapper("%d%%", xcentre, y1 + 10, fg, 0, 0x121, percentDone);
-					GUI_DrawText_Wrapper(String_Get_ByIndex(STR_ON_HOLD), xcentre, y1 + 18, fg, 0, 0x121);
-				}
-
-				Prim_Rect(x1 + 1.0f, y1 + 1.0f, x1 + w - 1.0f, y1 + h - 1.0f, 0xFF, 2.0f);
-			} else if (g_productionStringID != STR_BUILD_IT) {
-				GUI_DrawText_Wrapper(String_Get_ByIndex(g_productionStringID), widget->offsetX + widget->width / 2, y1 + (h - 10) / 2, fg, 0, 0x121);
-			}
 		} else if (g_factoryWindowItems[item].available < 0) {
 			if (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) {
 				const int yupper = y1 + 7;
 				const int ylower = y1 + 18;
 
 				GUI_DrawText_Wrapper("UPGRADE", xcentre, yupper, 6, 0, 0x132);
-
-				if (s->upgradeTimeLeft >= 100) {
-					GUI_DrawText_Wrapper("NEEDED", xcentre, ylower, 6, 0, 0x132);
-				} else {
-					GUI_DrawText_Wrapper("%d%%", xcentre, ylower, 6, 0, 0x132, 100 - s->upgradeTimeLeft);
-				}
+				GUI_DrawText_Wrapper("NEEDED", xcentre, ylower, 6, 0, 0x132);
 			}
 
 			/* Make upgrade cost yellow to distinguish it from unit cost. */
