@@ -45,13 +45,11 @@ enum {
 	SCROLL_BUTTON_WIDTH     = 24,
 	SCROLL_BUTTON_HEIGHT    = 15,
 	SCROLL_BUTTON_MARGIN    = 5,
-	SEND_ORDER_BUTTON_MARGIN= 2,
 };
 
 enum FactoryPanelLayout {
 	FACTORYPANEL_LARGE_ICON_FLAG    = 0x01,
 	FACTORYPANEL_SCROLL_FLAG        = 0x02,
-	FACTORYPANEL_STARPORT_FLAG      = 0x04,
 
 	FACTORYPANEL_SMALL_ICONS_WITHOUT_SCROLL = 0x00,
 };
@@ -64,26 +62,22 @@ static enum FactoryPanelLayout s_factory_panel_layout;
 /*--------------------------------------------------------------*/
 
 static void
-ActionPanel_CalculateOptimalLayout(const Widget *widget, bool is_starport)
+ActionPanel_CalculateOptimalLayout(const Widget *widget)
 {
 	const int h = widget->height
 		- 1 /* top margin. */
 		- 1 /* bottom margin. */
 		- (SCROLL_BUTTON_MARGIN + SCROLL_BUTTON_HEIGHT)
-		- (is_starport ? SEND_ORDER_BUTTON_MARGIN : 0)
-		- (is_starport ? g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].height : 0) /* send order button. */
 		;
 
 	if (h >= 4 * LARGE_PRODUCTION_ICON_MIN_STRIDE) {
 		/* Use large icons if possible. */
 		s_factory_panel_layout
-			= (is_starport ? FACTORYPANEL_STARPORT_FLAG : 0)
-			| (FACTORYPANEL_SCROLL_FLAG | FACTORYPANEL_LARGE_ICON_FLAG);
+			= (FACTORYPANEL_SCROLL_FLAG | FACTORYPANEL_LARGE_ICON_FLAG);
 	} else if (h >= 3 * SMALL_PRODUCTION_ICON_MIN_STRIDE) {
 		/* Use small icons with the scroll and send order buttons if they fit. */
 		s_factory_panel_layout
-			= (is_starport ? FACTORYPANEL_STARPORT_FLAG : 0)
-			| FACTORYPANEL_SCROLL_FLAG;
+			= FACTORYPANEL_SCROLL_FLAG;
 	} else {
 		/* Otherwise, use small icons, without the scroll and send order buttons. */
 		s_factory_panel_layout = FACTORYPANEL_SMALL_ICONS_WITHOUT_SCROLL;
@@ -97,9 +91,6 @@ ActionPanel_ProductionListHeight(const Widget *widget)
 
 	if (s_factory_panel_layout & FACTORYPANEL_SCROLL_FLAG)
 		h -= SCROLL_BUTTON_MARGIN + SCROLL_BUTTON_HEIGHT;
-
-	if (s_factory_panel_layout & FACTORYPANEL_STARPORT_FLAG)
-		h -= SEND_ORDER_BUTTON_MARGIN + g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].height;
 
 	return h;
 }
@@ -571,18 +562,6 @@ ActionPanel_ScrollButtonDimensions(const Widget *widget, bool up,
 }
 
 static void
-ActionPanel_SendOrderButtonDimensions(const Widget *widget,
-		int *x1, int *y1, int *x2, int *y2, int *w, int *h)
-{
-	if (x1 != NULL) *x1 = widget->offsetX;
-	if (y1 != NULL) *y1 = widget->offsetY + widget->height - g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].height;
-	if (x2 != NULL) *x2 = widget->offsetX + widget->width  - 1;
-	if (y2 != NULL) *y2 = widget->offsetY + widget->height - 1;
-	if (w  != NULL) *w = widget->width;
-	if (h  != NULL) *h = g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].height;
-}
-
-static void
 ActionPanel_ClampFactoryScrollOffset(const Widget *widget, Structure *s)
 {
 	int items_per_screen;
@@ -651,7 +630,7 @@ ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode)
 
 	if (g_factoryWindowTotal < 0) {
 		Structure_InitFactoryItems(s);
-		ActionPanel_CalculateOptimalLayout(widget, false);
+		ActionPanel_CalculateOptimalLayout(widget);
 		ActionPanel_ClampFactoryScrollOffset(widget, s);
 	}
 
@@ -784,7 +763,7 @@ ActionPanel_ClickStarport(const Widget *widget, Structure *s, uint16 scancode)
 
 	if (g_factoryWindowTotal < 0) {
 		Structure_InitFactoryItems(s);
-		ActionPanel_CalculateOptimalLayout(widget, true);
+		ActionPanel_CalculateOptimalLayout(widget);
 		ActionPanel_ClampFactoryScrollOffset(widget, s);
 	}
 
@@ -804,15 +783,6 @@ ActionPanel_ClickStarport(const Widget *widget, Structure *s, uint16 scancode)
 
 	if (scancode == 0) {
 		int x1, y1, x2, y2;
-
-		if (s_factory_panel_layout != FACTORYPANEL_SMALL_ICONS_WITHOUT_SCROLL) {
-			ActionPanel_SendOrderButtonDimensions(widget, &x1, &y1, &x2, &y2, NULL, NULL);
-			if (action_plus && Mouse_InRegion_Div(widget->div, x1, y1, x2, y2)) {
-				if (!House_StarportQueueEmpty(g_playerHouse))
-					Client_Send_SendStarportOrder(&s->o);
-				return true;
-			}
-		}
 
 		if (ActionPanel_ScrollFactory(widget, s))
 			return true;
@@ -927,32 +897,6 @@ ActionPanel_DrawScrollButtons(const Widget *widget)
 	}
 }
 
-static void
-ActionPanel_DrawStarportOrder(const Widget *widget)
-{
-	if (s_factory_panel_layout == FACTORYPANEL_SMALL_ICONS_WITHOUT_SCROLL)
-		return;
-
-	int x1, y1, x2, y2, w, h;
-	int fg;
-
-	ActionPanel_SendOrderButtonDimensions(widget, &x1, &y1, &x2, &y2, &w, &h);
-
-	if (House_StarportQueueEmpty(g_playerHouse)) {
-		Prim_FillRect_RGBA(x1, y1, x2, y2, 0x9C, 0x9C, 0xB8, 0XFF);
-		Prim_DrawBorder(x1, y1, w, h, 1, true, false, 1);
-		fg = 0xE;
-	} else {
-		const bool buttonDown = (widget->state.hover1 && Mouse_InRegion_Div(widget->div, x1, y1, x2, y2));
-
-		Prim_DrawBorder(x1, y1, w, h, 1, true, true, buttonDown ? 0 : 1);
-		fg = 0xF;
-	}
-
-	y1 += (h == 10) ? 1 : 2;
-	GUI_DrawText_Wrapper("Send Order", x1 + w/2, y1, fg, 0, 0x121);
-}
-
 void
 ActionPanel_HighlightIcon(enum HouseType houseID, int x1, int y1, bool large_icon)
 {
@@ -1025,15 +969,12 @@ ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 {
 	if (g_factoryWindowTotal < 0) {
 		Structure_InitFactoryItems(s);
-		ActionPanel_CalculateOptimalLayout(widget, (s->o.type == STRUCTURE_STARPORT));
+		ActionPanel_CalculateOptimalLayout(widget);
 		ActionPanel_ClampFactoryScrollOffset(widget, s);
 	}
 
 	const ScreenDiv *div = &g_screenDiv[SCREENDIV_SIDEBAR];
 	int height = widget->height;
-
-	if (s_factory_panel_layout & FACTORYPANEL_STARPORT_FLAG)
-		height -= SEND_ORDER_BUTTON_MARGIN + g_table_gameWidgetInfo[GAME_WIDGET_REPAIR_UPGRADE].height;
 
 	const int itemlist_height = ActionPanel_ProductionListHeight(widget);
 
@@ -1134,9 +1075,6 @@ ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 	Video_SetClippingArea(0, div->scaley * (widget->offsetY + 1), TRUE_DISPLAY_WIDTH, div->scaley * (widget->height - 2));
 	ActionPanel_DrawScrollButtons(widget);
 	Video_SetClippingArea(0, 0, TRUE_DISPLAY_WIDTH, TRUE_DISPLAY_HEIGHT);
-
-	if (s->o.type == STRUCTURE_STARPORT)
-		ActionPanel_DrawStarportOrder(widget);
 }
 
 void
@@ -1177,7 +1115,7 @@ ActionPanel_DrawPalace(const Widget *widget, Structure *s)
 
 	if (g_factoryWindowTotal != 0) {
 		g_factoryWindowTotal = 0;
-		ActionPanel_CalculateOptimalLayout(widget, false);
+		ActionPanel_CalculateOptimalLayout(widget);
 	}
 
 	ActionPanel_ProductionButtonDimensions(widget, s, 0, &x, &y, NULL, NULL, &w, &h);
