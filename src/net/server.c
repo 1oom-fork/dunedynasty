@@ -1070,7 +1070,14 @@ Server_Recv_PauseCancelItem(enum HouseType houseID, const unsigned char *buf)
 
 	if (s->o.type == STRUCTURE_STARPORT) {
 		Server_Recv_CancelItemStarport(s, objectType);
-	} else if (s->objectType == objectType && s->o.linkedID != 0xFF) {
+		return;
+	}
+
+	if (BuildQueue_RemoveTail(&s->queue, objectType, NULL)){
+		return;
+	}
+
+	if (s->objectType == objectType && s->o.linkedID != 0xFF) {
 		if (s->o.flags.s.onHold
 				|| (s->o.type == STRUCTURE_CONSTRUCTION_YARD
 					&& s->countDown == 0)) {
@@ -1084,8 +1091,6 @@ Server_Recv_PauseCancelItem(enum HouseType houseID, const unsigned char *buf)
 		} else {
 			s->o.flags.s.onHold = true;
 		}
-	} else {
-		BuildQueue_RemoveTail(&s->queue, objectType, NULL);
 	}
 }
 

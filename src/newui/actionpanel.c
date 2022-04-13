@@ -637,6 +637,13 @@ ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode)
 	int item;
 
 	if (scancode) {
+		if (scancode == SCANCODE_ESCAPE){
+			if(s->queue.last == NULL)
+				Client_Send_PauseCancelItem(&s->o, s->objectType);
+			else
+				Client_Send_PauseCancelItem(&s->o, s->queue.last->objectType);
+			return true;
+		}
 		for (item = 0; item < g_factoryWindowTotal; item++) {
 			if (g_factoryWindowItems[item].shortcut == scancode) {
 				break;
