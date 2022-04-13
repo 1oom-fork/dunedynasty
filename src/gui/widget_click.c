@@ -209,14 +209,20 @@ GUI_Widget_Picture_Click(Widget *w)
 	bool lmb = (w->state.buttonState & 0x04);
 	bool rmb = (w->state.buttonState & 0x40);
 
+	const StructureInfo *si = &g_table_structureInfo[s->o.type];
 	if (rmb) {
-		const StructureInfo *si = &g_table_structureInfo[s->o.type];
 		if (si->o.flags.factory) {
 			if(s->queue.last == NULL)
 				Client_Send_PauseCancelItem(&s->o, s->objectType);
 			else
 				Client_Send_PauseCancelItem(&s->o, s->queue.last->objectType);
 			return false;
+		}
+	} else if (lmb) {
+		if (si->o.flags.factory) {
+			if (g_productionStringID == STR_ON_HOLD && s->o.linkedID != 0xFF && s->o.flags.s.onHold) {
+				Client_Send_PurchaseResumeItem(&s->o, s->objectType);
+			}
 		}
 	}
 
