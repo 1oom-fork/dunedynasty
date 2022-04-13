@@ -426,6 +426,8 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 			case 3: /* Structure */
 				if (!isNotPlayerOwned &&
 						((g_productionStringID == STR_PLACE_IT) ||
+						 (g_productionStringID == STR_ON_HOLD) ||
+						 (g_productionStringID == STR_D_DONE) ||
 						 (s->o.type == STRUCTURE_PALACE && s->countDown == 0) ||
 						 (s->o.type == STRUCTURE_STARPORT && !House_StarportQueueEmpty(h)) ||
 						 (s->o.type == STRUCTURE_REPAIR && s->o.linkedID != 0xFF))) {

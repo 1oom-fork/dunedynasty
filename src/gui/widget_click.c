@@ -206,6 +206,20 @@ GUI_Widget_Picture_Click(Widget *w)
 	if (s == NULL)
 		return false;
 
+	bool lmb = (w->state.buttonState & 0x04);
+	bool rmb = (w->state.buttonState & 0x40);
+
+	if (rmb) {
+		const StructureInfo *si = &g_table_structureInfo[s->o.type];
+		if (si->o.flags.factory) {
+			if(s->queue.last == NULL)
+				Client_Send_PauseCancelItem(&s->o, s->objectType);
+			else
+				Client_Send_PauseCancelItem(&s->o, s->queue.last->objectType);
+			return false;
+		}
+	}
+
 	if (s->o.type == STRUCTURE_CONSTRUCTION_YARD) {
 		if (g_productionStringID == STR_PLACE_IT)
 			Client_Send_EnterPlacementMode(&s->o);
