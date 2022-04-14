@@ -40,7 +40,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 	},
 	{ /* 2 */
 		/* index       */ WIDGET_INDEX_STATUS,
-		/* clickProc   */ &GUI_Widget_Picture_Click,
+		/* clickProc   */ &GUI_Widget_Status_Click,
 		/* shortcut    */ SCANCODE_F3,
 		/* flags       */ 17605,
 		/* spriteID    */ -4,
@@ -53,7 +53,7 @@ WidgetInfo g_table_gameWidgetInfo[GAME_WIDGET_MAX + 1] = {
 	},
 	{ /* 3 */
 		/* index       */ WIDGET_INDEX_PICTURE,
-		/* clickProc   */ &GUI_Widget_Name_Click,
+		/* clickProc   */ &GUI_Widget_Portrait_Click,
 		/* shortcut    */ 0,
 		/* flags       */ 17605,
 		/* spriteID    */ -4,

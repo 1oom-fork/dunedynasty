@@ -134,7 +134,7 @@ bool GUI_Widget_TextButton_Click(Widget *w)
  *
  * @return False, always.
  */
-bool GUI_Widget_Name_Click(Widget *w)
+bool GUI_Widget_Portrait_Click(Widget *w)
 {
 	int cx = 0, cy = 0, count = 0;
 	VARIABLE_NOT_USED(w);
@@ -198,7 +198,7 @@ bool GUI_Widget_Cancel_Click(Widget *w)
 }
 
 bool
-GUI_Widget_Picture_Click(Widget *w)
+GUI_Widget_Status_Click(Widget *w)
 {
 	VARIABLE_NOT_USED(w);
 
