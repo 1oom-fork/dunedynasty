@@ -222,6 +222,8 @@ GUI_Widget_Picture_Click(Widget *w)
 		if (si->o.flags.factory) {
 			if (g_productionStringID == STR_ON_HOLD && s->o.linkedID != 0xFF && s->o.flags.s.onHold) {
 				Client_Send_PurchaseResumeItem(&s->o, s->objectType);
+			} else if (g_productionStringID == STR_D_DONE) {
+				Client_Send_PauseCancelItem(&s->o, s->objectType);
 			}
 		}
 	}
