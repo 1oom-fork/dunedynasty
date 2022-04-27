@@ -562,24 +562,24 @@ ActionPanel_ScrollButtonDimensions(const Widget *widget, bool up,
 }
 
 static void
-ActionPanel_ClampFactoryScrollOffset(const Widget *widget, Structure *s)
+ActionPanel_ClampScrollOffset(const Widget *widget, int itemCount, int *scrollOffsetY)
 {
 	int items_per_screen;
 	const int stride = ActionPanel_ProductionButtonStride(widget, &items_per_screen);
-	const int first_item = g_factoryWindowTotal - (items_per_screen <= 1 ? 1 : items_per_screen);
+	const int first_item = itemCount - (items_per_screen <= 1 ? 1 : items_per_screen);
 	int y1;
 
-	ActionPanel_ProductionButtonDimensions(widget, s->factoryOffsetY, first_item, NULL, &y1, NULL, NULL, NULL, NULL);
+	ActionPanel_ProductionButtonDimensions(widget, *scrollOffsetY, first_item, NULL, &y1, NULL, NULL, NULL, NULL);
 
 	if (y1 < widget->offsetY + 16)
-		s->factoryOffsetY = -stride * first_item;
+		*scrollOffsetY = -stride * first_item;
 
-	if (s->factoryOffsetY > 0)
-		s->factoryOffsetY = 0;
+	if (*scrollOffsetY > 0)
+		*scrollOffsetY = 0;
 }
 
 static bool
-ActionPanel_ScrollFactory(const Widget *widget, Structure *s)
+ActionPanel_Scroll(const Widget *widget, int itemCount, int *scrollOffsetY)
 {
 	int delta = g_mouseDZ;
 	int x1, y1, x2, y2;
@@ -597,8 +597,8 @@ ActionPanel_ScrollFactory(const Widget *widget, Structure *s)
 
 	const int stride = ActionPanel_ProductionButtonStride(widget, NULL);
 
-	s->factoryOffsetY = stride * (s->factoryOffsetY / stride + delta);
-	ActionPanel_ClampFactoryScrollOffset(widget, s);
+	*scrollOffsetY = stride * (*scrollOffsetY / stride + delta);
+	ActionPanel_ClampScrollOffset(widget, itemCount, scrollOffsetY);
 
 	return true;
 }
@@ -662,7 +662,7 @@ ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode)
 	if (g_factoryWindowTotal < 0) {
 		Structure_InitFactoryItems(s);
 		ActionPanel_CalculateOptimalLayout(widget);
-		ActionPanel_ClampFactoryScrollOffset(widget, s);
+		ActionPanel_ClampScrollOffset(widget, g_factoryWindowTotal, &s->factoryOffsetY);
 	}
 
 	if (scancode == SCANCODE_ESCAPE){
@@ -679,7 +679,7 @@ ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode)
 		item = ActionPanel_Factory_GetItemByScancode(scancode);
 	}
 	else {
-		if (ActionPanel_ScrollFactory(widget, s))
+		if (ActionPanel_Scroll(widget, g_factoryWindowTotal, &s->factoryOffsetY))
 			return true;
 
 		item = ActionPanel_GetClickedItem(widget, g_factoryWindowTotal, s->factoryOffsetY);
@@ -787,7 +787,7 @@ ActionPanel_ClickStarport(const Widget *widget, Structure *s, uint16 scancode)
 	if (g_factoryWindowTotal < 0) {
 		Structure_InitFactoryItems(s);
 		ActionPanel_CalculateOptimalLayout(widget);
-		ActionPanel_ClampFactoryScrollOffset(widget, s);
+		ActionPanel_ClampScrollOffset(widget, g_factoryWindowTotal, &s->factoryOffsetY);
 	}
 
 	bool action_plus;
@@ -805,7 +805,7 @@ ActionPanel_ClickStarport(const Widget *widget, Structure *s, uint16 scancode)
 	int item;
 
 	if (scancode == 0) {
-		if (ActionPanel_ScrollFactory(widget, s))
+		if (ActionPanel_Scroll(widget, g_factoryWindowTotal, &s->factoryOffsetY))
 			return true;
 
 		item = ActionPanel_GetClickedItem(widget, g_factoryWindowTotal, s->factoryOffsetY);
@@ -877,12 +877,12 @@ ActionPanel_DrawStructureLayout(enum StructureType s, int x1, int y1)
 }
 
 static void
-ActionPanel_DrawScrollButtons(const Widget *widget)
+ActionPanel_DrawScrollButtons(const Widget *widget, int itemCount)
 {
 	int items_per_screen;
 
 	ActionPanel_ProductionButtonStride(widget, &items_per_screen);
-	if (g_factoryWindowTotal <= items_per_screen)
+	if (itemCount <= items_per_screen)
 		return;
 
 	const bool pressed = (widget->state.hover1);
@@ -978,7 +978,7 @@ ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 	if (g_factoryWindowTotal < 0) {
 		Structure_InitFactoryItems(s);
 		ActionPanel_CalculateOptimalLayout(widget);
-		ActionPanel_ClampFactoryScrollOffset(widget, s);
+		ActionPanel_ClampScrollOffset(widget, g_factoryWindowTotal, &s->factoryOffsetY);
 	}
 
 	const ScreenDiv *div = &g_screenDiv[SCREENDIV_SIDEBAR];
@@ -1081,7 +1081,7 @@ ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 	}
 
 	Video_SetClippingArea(0, div->scaley * (widget->offsetY + 1), TRUE_DISPLAY_WIDTH, div->scaley * (widget->height - 2));
-	ActionPanel_DrawScrollButtons(widget);
+	ActionPanel_DrawScrollButtons(widget, g_factoryWindowTotal);
 	Video_SetClippingArea(0, 0, TRUE_DISPLAY_WIDTH, TRUE_DISPLAY_HEIGHT);
 }
 
