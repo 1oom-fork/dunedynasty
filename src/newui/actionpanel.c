@@ -515,7 +515,7 @@ ActionPanel_ProductionButtonStride(const Widget *widget, int *ret_items_per_scre
 }
 
 static void
-ActionPanel_ProductionButtonDimensions(const Widget *widget, const Structure *s,
+ActionPanel_ProductionButtonDimensions(const Widget *widget, int scrollOffsetY,
 		int item, int *x1, int *y1, int *x2, int *y2, int *w, int *h)
 {
 	int items_per_screen;
@@ -524,7 +524,7 @@ ActionPanel_ProductionButtonDimensions(const Widget *widget, const Structure *s,
 	const int height = (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) ? LARGE_PRODUCTION_ICON_HEIGHT : SMALL_PRODUCTION_ICON_HEIGHT;
 	const int x = (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) ? (widget->offsetX + 4) : (widget->offsetX + 2);
 	const int widget_padding = ActionPanel_ProductionListHeight(widget) - items_per_screen * stride;
-	int y = widget->offsetY + 1 + s->factoryOffsetY + stride * item;
+	int y = widget->offsetY + 1 + scrollOffsetY + stride * item;
 
 	if (items_per_screen <= 0) {
 		y += (widget_padding - height) / 2;
@@ -569,7 +569,7 @@ ActionPanel_ClampFactoryScrollOffset(const Widget *widget, Structure *s)
 	const int first_item = g_factoryWindowTotal - (items_per_screen <= 1 ? 1 : items_per_screen);
 	int y1;
 
-	ActionPanel_ProductionButtonDimensions(widget, s, first_item, NULL, &y1, NULL, NULL, NULL, NULL);
+	ActionPanel_ProductionButtonDimensions(widget, s->factoryOffsetY, first_item, NULL, &y1, NULL, NULL, NULL, NULL);
 
 	if (y1 < widget->offsetY + 16)
 		s->factoryOffsetY = -stride * first_item;
@@ -616,6 +616,37 @@ ActionPanel_BeginPlacementMode(void)
 	GUI_ChangeSelectionType(SELECTIONTYPE_PLACE);
 }
 
+static int
+ActionPanel_GetClickedItem(const Widget *widget, int itemCount, int scrollOffsetY)
+{
+	int mouseY;
+	Mouse_TransformToDiv(widget->div, NULL, &mouseY);
+
+	if (mouseY >= widget->offsetY + ActionPanel_ProductionListHeight(widget))
+		return itemCount;
+
+	int item;
+	for (item = 0; item < itemCount; item++) {
+		int x1, y1, x2, y2;
+
+		ActionPanel_ProductionButtonDimensions(widget, scrollOffsetY, item, &x1, &y1, &x2, &y2, NULL, NULL);
+		if (Mouse_InRegion_Div(widget->div, x1, y1, x2, y2))
+			break;
+	}
+	return item;
+}
+
+static int
+ActionPanel_Factory_GetItemByScancode(uint16 scancode)
+{
+	int item;
+	for (item = 0; item < g_factoryWindowTotal; item++) {
+		if (g_factoryWindowItems[item].shortcut == scancode)
+			break;
+	}
+	return item;
+}
+
 bool
 ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode)
 {
@@ -634,39 +665,24 @@ ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode)
 		ActionPanel_ClampFactoryScrollOffset(widget, s);
 	}
 
+	if (scancode == SCANCODE_ESCAPE){
+		if(s->queue.last == NULL)
+			Client_Send_PauseCancelItem(&s->o, s->objectType);
+		else
+			Client_Send_PauseCancelItem(&s->o, s->queue.last->objectType);
+		return true;
+	}
+
 	int item;
 
 	if (scancode) {
-		if (scancode == SCANCODE_ESCAPE){
-			if(s->queue.last == NULL)
-				Client_Send_PauseCancelItem(&s->o, s->objectType);
-			else
-				Client_Send_PauseCancelItem(&s->o, s->queue.last->objectType);
-			return true;
-		}
-		for (item = 0; item < g_factoryWindowTotal; item++) {
-			if (g_factoryWindowItems[item].shortcut == scancode) {
-				break;
-			}
-		}
+		item = ActionPanel_Factory_GetItemByScancode(scancode);
 	}
 	else {
 		if (ActionPanel_ScrollFactory(widget, s))
 			return true;
 
-		int mouseY;
-		Mouse_TransformToDiv(widget->div, NULL, &mouseY);
-
-		if (mouseY >= widget->offsetY + ActionPanel_ProductionListHeight(widget))
-			return false;
-
-		for (item = 0; item < g_factoryWindowTotal; item++) {
-			int x1, y1, x2, y2;
-
-			ActionPanel_ProductionButtonDimensions(widget, s, item, &x1, &y1, &x2, &y2, NULL, NULL);
-			if (Mouse_InRegion_Div(widget->div, x1, y1, x2, y2))
-				break;
-		}
+		item = ActionPanel_GetClickedItem(widget, g_factoryWindowTotal, s->factoryOffsetY);
 	}
 
 	if (item >= g_factoryWindowTotal) {
@@ -789,28 +805,13 @@ ActionPanel_ClickStarport(const Widget *widget, Structure *s, uint16 scancode)
 	int item;
 
 	if (scancode == 0) {
-		int x1, y1, x2, y2;
-
 		if (ActionPanel_ScrollFactory(widget, s))
 			return true;
 
-		int mouseY;
-		Mouse_TransformToDiv(widget->div, NULL, &mouseY);
-
-		if (mouseY >= widget->offsetY + ActionPanel_ProductionListHeight(widget))
-			return false;
-
-		for (item = 0; item < g_factoryWindowTotal; item++) {
-			ActionPanel_ProductionButtonDimensions(widget, s, item, &x1, &y1, &x2, &y2, NULL, NULL);
-			if (Mouse_InRegion_Div(widget->div, x1, y1, x2, y2))
-				break;
-		}
+		item = ActionPanel_GetClickedItem(widget, g_factoryWindowTotal, s->factoryOffsetY);
 	}
 	else {
-		for (item = 0; item < g_factoryWindowTotal; item++) {
-			if (g_factoryWindowItems[item].shortcut == scancode)
-				break;
-		}
+		item = ActionPanel_Factory_GetItemByScancode(scancode);
 	}
 
 	if (!(0 <= item && item < g_factoryWindowTotal))
@@ -841,7 +842,7 @@ ActionPanel_ClickPalace(const Widget *widget, Structure *s, uint16 scancode)
 
 	g_factoryWindowTotal = 0;
 
-	ActionPanel_ProductionButtonDimensions(widget, s, 0, &x1, &y1, &x2, &y2, NULL, NULL);
+	ActionPanel_ProductionButtonDimensions(widget, s->factoryOffsetY, 0, &x1, &y1, &x2, &y2, NULL, NULL);
 	if (lmb && Mouse_InRegion_Div(widget->div, x1, y1, x2, y2)) {
 		Client_Send_ActivateSuperweapon(&s->o);
 		return true;
@@ -998,7 +999,7 @@ ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 		int x1, y1, w, h;
 		int fg = 0xF;
 
-		ActionPanel_ProductionButtonDimensions(widget, s, item, &x1, &y1, NULL, NULL, &w, &h);
+		ActionPanel_ProductionButtonDimensions(widget, s->factoryOffsetY, item, &x1, &y1, NULL, NULL, &w, &h);
 		if (y1 > widget->offsetY + itemlist_height)
 			break;
 
@@ -1125,7 +1126,7 @@ ActionPanel_DrawPalace(const Widget *widget, Structure *s)
 		ActionPanel_CalculateOptimalLayout(widget);
 	}
 
-	ActionPanel_ProductionButtonDimensions(widget, s, 0, &x, &y, NULL, NULL, &w, &h);
+	ActionPanel_ProductionButtonDimensions(widget, s->factoryOffsetY, 0, &x, &y, NULL, NULL, &w, &h);
 	Prim_DrawBorder(widget->offsetX, widget->offsetY, widget->width, widget->height, 1, false, true, 0);
 	Video_SetClippingArea(0, div->scaley * widget->offsetY, TRUE_DISPLAY_WIDTH, div->scaley * (widget->height - 2));
 
