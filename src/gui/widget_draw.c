@@ -116,8 +116,12 @@ void GUI_Widget_SpriteTextButton_Draw(Widget *w)
 {
 	Structure *s = Structure_Get_ByPackedTile(g_selectionPosition);
 
-	if (s == NULL)
+	if (s == NULL) {
+		Unit *u = Unit_GetForActionPanel();
+		if (u == NULL) return;
+		ActionPanel_DrawUnits(w);
 		return;
+	}
 
 	if (s->o.type == STRUCTURE_PALACE) {
 		ActionPanel_DrawPalace(w, s);
@@ -477,6 +481,7 @@ void GUI_Widget_ActionPanel_Draw(bool forceDraw)
 					uint16 actionCurrent;
 
 					GUI_Widget_MakeVisible(widget_portrait);
+					GUI_Widget_MakeVisible(widget_ap_menu);
 
 					actionCurrent = (u->nextActionID != ACTION_INVALID) ? u->nextActionID : u->actionID;
 

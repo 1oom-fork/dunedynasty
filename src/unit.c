@@ -110,6 +110,18 @@ Unit_AnySelected(void)
 	return false;
 }
 
+uint16
+Unit_CountSelected(void)
+{
+	int count = 0;
+	for (int i = 0; i < MAX_SELECTABLE_UNITS; i++) {
+		if (g_unitSelected[i] != NULL)
+			++count;
+	}
+
+	return count;
+}
+
 void
 Unit_AddSelected(Unit *unit)
 {

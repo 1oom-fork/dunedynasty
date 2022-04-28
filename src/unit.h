@@ -131,6 +131,7 @@ extern Unit *Unit_FirstSelected(int *iter);
 extern Unit *Unit_NextSelected(int *iter);
 extern bool Unit_IsSelected(const Unit *unit);
 extern bool Unit_AnySelected(void);
+extern uint16 Unit_CountSelected(void);
 extern void Unit_AddSelected(Unit *unit);
 extern void Unit_Unselect(const Unit *unit);
 extern void Unit_UnselectAll(void);

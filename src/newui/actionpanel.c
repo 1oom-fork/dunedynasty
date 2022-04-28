@@ -56,6 +56,7 @@ enum FactoryPanelLayout {
 
 FactoryWindowItem g_factoryWindowItems[MAX_FACTORY_WINDOW_ITEMS];
 int g_factoryWindowTotal;
+static int s_unitOffsetY;
 
 static enum FactoryPanelLayout s_factory_panel_layout;
 
@@ -85,7 +86,7 @@ ActionPanel_CalculateOptimalLayout(const Widget *widget)
 }
 
 static int
-ActionPanel_ProductionListHeight(const Widget *widget)
+ActionPanel_List_Height(const Widget *widget)
 {
 	int h = widget->height - 1;
 
@@ -498,7 +499,7 @@ ActionPanel_DrawMissileCountdown(uint8 fg, int count)
 static int
 ActionPanel_ProductionButtonStride(const Widget *widget, int *ret_items_per_screen)
 {
-	const int h = ActionPanel_ProductionListHeight(widget);
+	const int h = ActionPanel_List_Height(widget);
 	const int min_item_height = (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) ? LARGE_PRODUCTION_ICON_MIN_STRIDE : SMALL_PRODUCTION_ICON_MIN_STRIDE;
 	const int max_item_height = (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) ? LARGE_PRODUCTION_ICON_MAX_STRIDE : SMALL_PRODUCTION_ICON_MAX_STRIDE;
 	const int items_per_screen = h / max_item_height;
@@ -515,7 +516,7 @@ ActionPanel_ProductionButtonStride(const Widget *widget, int *ret_items_per_scre
 }
 
 static void
-ActionPanel_ProductionButtonDimensions(const Widget *widget, int scrollOffsetY,
+ActionPanel_List_ButtonDimensions(const Widget *widget, int scrollOffsetY,
 		int item, int *x1, int *y1, int *x2, int *y2, int *w, int *h)
 {
 	int items_per_screen;
@@ -523,7 +524,7 @@ ActionPanel_ProductionButtonDimensions(const Widget *widget, int scrollOffsetY,
 	const int width  = (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) ? LARGE_PRODUCTION_ICON_WIDTH  : SMALL_PRODUCTION_ICON_WIDTH;
 	const int height = (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) ? LARGE_PRODUCTION_ICON_HEIGHT : SMALL_PRODUCTION_ICON_HEIGHT;
 	const int x = (s_factory_panel_layout & FACTORYPANEL_LARGE_ICON_FLAG) ? (widget->offsetX + 4) : (widget->offsetX + 2);
-	const int widget_padding = ActionPanel_ProductionListHeight(widget) - items_per_screen * stride;
+	const int widget_padding = ActionPanel_List_Height(widget) - items_per_screen * stride;
 	int y = widget->offsetY + 1 + scrollOffsetY + stride * item;
 
 	if (items_per_screen <= 0) {
@@ -552,7 +553,7 @@ ActionPanel_ScrollButtonDimensions(const Widget *widget, bool up,
 		y = widget->offsetY + widget->height / 2 - (up ? SCROLL_BUTTON_HEIGHT : 0);
 	} else {
 		x = widget->offsetX + (up ? 5 : 31);
-		y = widget->offsetY + ActionPanel_ProductionListHeight(widget) + SCROLL_BUTTON_MARGIN / 2;
+		y = widget->offsetY + ActionPanel_List_Height(widget) + SCROLL_BUTTON_MARGIN / 2;
 	}
 
 	if (x1 != NULL) *x1 = x;
@@ -569,7 +570,7 @@ ActionPanel_ClampScrollOffset(const Widget *widget, int itemCount, int *scrollOf
 	const int first_item = itemCount - (items_per_screen <= 1 ? 1 : items_per_screen);
 	int y1;
 
-	ActionPanel_ProductionButtonDimensions(widget, *scrollOffsetY, first_item, NULL, &y1, NULL, NULL, NULL, NULL);
+	ActionPanel_List_ButtonDimensions(widget, *scrollOffsetY, first_item, NULL, &y1, NULL, NULL, NULL, NULL);
 
 	if (y1 < widget->offsetY + 16)
 		*scrollOffsetY = -stride * first_item;
@@ -622,14 +623,14 @@ ActionPanel_GetClickedItem(const Widget *widget, int itemCount, int scrollOffset
 	int mouseY;
 	Mouse_TransformToDiv(widget->div, NULL, &mouseY);
 
-	if (mouseY >= widget->offsetY + ActionPanel_ProductionListHeight(widget))
+	if (mouseY >= widget->offsetY + ActionPanel_List_Height(widget))
 		return itemCount;
 
 	int item;
 	for (item = 0; item < itemCount; item++) {
 		int x1, y1, x2, y2;
 
-		ActionPanel_ProductionButtonDimensions(widget, scrollOffsetY, item, &x1, &y1, &x2, &y2, NULL, NULL);
+		ActionPanel_List_ButtonDimensions(widget, scrollOffsetY, item, &x1, &y1, &x2, &y2, NULL, NULL);
 		if (Mouse_InRegion_Div(widget->div, x1, y1, x2, y2))
 			break;
 	}
@@ -842,7 +843,7 @@ ActionPanel_ClickPalace(const Widget *widget, Structure *s, uint16 scancode)
 
 	g_factoryWindowTotal = 0;
 
-	ActionPanel_ProductionButtonDimensions(widget, s->factoryOffsetY, 0, &x1, &y1, &x2, &y2, NULL, NULL);
+	ActionPanel_List_ButtonDimensions(widget, s->factoryOffsetY, 0, &x1, &y1, &x2, &y2, NULL, NULL);
 	if (lmb && Mouse_InRegion_Div(widget->div, x1, y1, x2, y2)) {
 		Client_Send_ActivateSuperweapon(&s->o);
 		return true;
@@ -973,6 +974,47 @@ ActionPanel_HighlightIcon(enum HouseType houseID, int x1, int y1, bool large_ico
 }
 
 void
+ActionPanel_DrawUnits(const Widget *widget)
+{
+	int unit_count = Unit_CountSelected();
+	if (!unit_count) return;
+
+	ActionPanel_CalculateOptimalLayout(widget);
+	ActionPanel_ClampScrollOffset(widget, unit_count, &s_unitOffsetY);
+
+	const ScreenDiv *div = &g_screenDiv[SCREENDIV_SIDEBAR];
+	int height = widget->height;
+
+	const int itemlist_height = ActionPanel_List_Height(widget);
+
+	Prim_DrawBorder(widget->offsetX, widget->offsetY, widget->width, height, 1, false, true, 0);
+	Video_SetClippingArea(0, div->scaley * (widget->offsetY + 1), TRUE_DISPLAY_WIDTH, div->scaley * itemlist_height);
+
+	int pi;
+	int pos = 0;
+	const Unit *u = Unit_FirstSelected(&pi);
+	for (; u != NULL; u = Unit_NextSelected(&pi), ++pos) {
+		const UnitInfo *ui = &g_table_unitInfo[u->o.type];
+		const enum ShapeID shapeID = ui->o.spriteID;
+
+		int x1, y1, w, h;
+
+		ActionPanel_List_ButtonDimensions(widget, s_unitOffsetY, pos, &x1, &y1, NULL, NULL, &w, &h);
+		if (y1 > widget->offsetY + itemlist_height)
+			break;
+
+		if (y1 < widget->offsetY)
+			continue;
+
+		Shape_DrawScale(shapeID, x1, y1, w, h, 0, 0);
+	}
+
+	Video_SetClippingArea(0, div->scaley * (widget->offsetY + 1), TRUE_DISPLAY_WIDTH, div->scaley * (widget->height - 2));
+	ActionPanel_DrawScrollButtons(widget, unit_count);
+	Video_SetClippingArea(0, 0, TRUE_DISPLAY_WIDTH, TRUE_DISPLAY_HEIGHT);
+}
+
+void
 ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 {
 	if (g_factoryWindowTotal < 0) {
@@ -984,7 +1026,7 @@ ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 	const ScreenDiv *div = &g_screenDiv[SCREENDIV_SIDEBAR];
 	int height = widget->height;
 
-	const int itemlist_height = ActionPanel_ProductionListHeight(widget);
+	const int itemlist_height = ActionPanel_List_Height(widget);
 
 	Prim_DrawBorder(widget->offsetX, widget->offsetY, widget->width, height, 1, false, true, 0);
 	Video_SetClippingArea(0, div->scaley * (widget->offsetY + 1), TRUE_DISPLAY_WIDTH, div->scaley * itemlist_height);
@@ -999,7 +1041,7 @@ ActionPanel_DrawFactory(const Widget *widget, Structure *s)
 		int x1, y1, w, h;
 		int fg = 0xF;
 
-		ActionPanel_ProductionButtonDimensions(widget, s->factoryOffsetY, item, &x1, &y1, NULL, NULL, &w, &h);
+		ActionPanel_List_ButtonDimensions(widget, s->factoryOffsetY, item, &x1, &y1, NULL, NULL, &w, &h);
 		if (y1 > widget->offsetY + itemlist_height)
 			break;
 
@@ -1126,7 +1168,7 @@ ActionPanel_DrawPalace(const Widget *widget, Structure *s)
 		ActionPanel_CalculateOptimalLayout(widget);
 	}
 
-	ActionPanel_ProductionButtonDimensions(widget, s->factoryOffsetY, 0, &x, &y, NULL, NULL, &w, &h);
+	ActionPanel_List_ButtonDimensions(widget, s->factoryOffsetY, 0, &x, &y, NULL, NULL, &w, &h);
 	Prim_DrawBorder(widget->offsetX, widget->offsetY, widget->width, widget->height, 1, false, true, 0);
 	Video_SetClippingArea(0, div->scaley * widget->offsetY, TRUE_DISPLAY_WIDTH, div->scaley * (widget->height - 2));
 
