@@ -338,26 +338,38 @@ ActionPanel_HealthBar_Dimensions(uint16 *r_x, uint16 *r_y, uint16 *r_w, uint16 *
 	*r_h = 7;
 }
 
-void
-ActionPanel_DrawHealthBar(int curr, int max)
+static void
+ActionPanel_DrawProgressBar(int curr, int max, uint16 x, uint16 y, uint16 w, uint16 h, uint8 colour)
 {
-	uint16 x, y, w, h;
-	ActionPanel_HealthBar_Dimensions(&x, &y, &w, &h);
+	const int wh = max(1, w * curr / max);
 
+	Prim_DrawBorder(x, y, w + 2, h + 2, 1, false, true, 1);
+	Prim_FillRect_i(x + 1, y + 1, x + wh, y + h, colour);
+}
+
+static void
+ActionPanel_DrawCustomHealthBar(int curr, int max, uint16 x, uint16 y, uint16 w, uint16 h)
+{
 	if (curr > max)
 		curr = max;
 
 	if (max < 1)
 		max = 1;
 
-	const int wh = max(1, w * curr / max);
-
 	uint8 colour = 4;
 	if (curr <= max / 2) colour = 5;
 	if (curr <= max / 4) colour = 8;
 
-	Prim_DrawBorder(x, y, w + 2, h + 2, 1, false, true, 1);
-	Prim_FillRect_i(x + 1, y + 1, x + wh, y + h, colour);
+	ActionPanel_DrawProgressBar(curr, max, x, y, w, h, colour);
+}
+
+void
+ActionPanel_DrawHealthBar(int curr, int max)
+{
+	uint16 x, y, w, h;
+	ActionPanel_HealthBar_Dimensions(&x, &y, &w, &h);
+
+	ActionPanel_DrawCustomHealthBar(curr, max, x, y, w, h);
 
 	Shape_Draw(SHAPE_HEALTH_INDICATOR, x, y + 9, 0, 0x4000);
 	GUI_DrawText_Wrapper(String_Get_ByIndex(STR_DMG), x + 4, y + 14, 29, 0, 0x11);
@@ -1065,6 +1077,7 @@ ActionPanel_DrawUnits(const Widget *widget)
 			continue;
 
 		Shape_DrawScale(shapeID, x1, y1, w, h, 0, 0);
+		ActionPanel_DrawCustomHealthBar(u->o.hitpoints, ui->o.hitpoints, x1, y1 - 5, w - 2, 3);
 	}
 
 	Video_SetClippingArea(0, div->scaley * (widget->offsetY + 1), TRUE_DISPLAY_WIDTH, div->scaley * (widget->height - 2));
