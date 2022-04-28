@@ -48,8 +48,11 @@ bool GUI_Widget_ActionPanel_ProcessGameInput(Widget *w, uint16 key)
 {
 	Structure *s = Structure_Get_ByPackedTile(g_selectionPosition);
 
-	if (s == NULL)
-		return false;
+	if (s == NULL) {
+		const Unit *u = Unit_GetForActionPanel();
+		if (u == NULL) return false;
+		return ActionPanel_ClickUnits(w, key);
+	}
 
 	if (s->o.type == STRUCTURE_STARPORT) {
 		return ActionPanel_ClickStarport(w, s, key);

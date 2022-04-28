@@ -156,6 +156,36 @@ Unit_Unselect(const Unit *unit)
 }
 
 void
+Unit_UnselectType(enum UnitType type)
+{
+	for (int i = 0; i < MAX_SELECTABLE_UNITS; i++) {
+		if (g_unitSelected[i] == NULL) continue;
+		if (g_unitSelected[i]->o.type == type && g_unitSelected[i]->o.houseID == g_playerHouseID) {
+			g_unitSelected[i] = NULL;
+		}
+	}
+
+	if ((g_selectionType == SELECTIONTYPE_UNIT) && !Unit_AnySelected()) {
+		GUI_ChangeSelectionType(SELECTIONTYPE_STRUCTURE);
+	}
+}
+
+void
+Unit_UnselectAllButKeepType(enum UnitType type)
+{
+	for (int i = 0; i < MAX_SELECTABLE_UNITS; i++) {
+		if (g_unitSelected[i] == NULL) continue;
+		if (g_unitSelected[i]->o.type != type || g_unitSelected[i]->o.houseID != g_playerHouseID) {
+			g_unitSelected[i] = NULL;
+		}
+	}
+
+	if ((g_selectionType == SELECTIONTYPE_UNIT) && !Unit_AnySelected()) {
+		GUI_ChangeSelectionType(SELECTIONTYPE_STRUCTURE);
+	}
+}
+
+void
 Unit_UnselectAll(void)
 {
 	for (int i = 0; i < MAX_SELECTABLE_UNITS; i++) {

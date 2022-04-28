@@ -41,6 +41,7 @@ extern void ActionPanel_DrawUnits(const Widget *widget);
 extern void ActionPanel_DrawFactory(const Widget *widget, Structure *s);
 extern void ActionPanel_DrawPalace(const Widget *w, Structure *s);
 extern void ActionPanel_BeginPlacementMode(void);
+extern bool ActionPanel_ClickUnits(const Widget *widget, uint16 scancode);
 extern bool ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode);
 extern bool ActionPanel_ClickStarport(const Widget *widget, Structure *s, uint16 scancode);
 extern bool ActionPanel_ClickPalace(const Widget *widget, Structure *s, uint16 scancode);

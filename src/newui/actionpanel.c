@@ -649,6 +649,64 @@ ActionPanel_Factory_GetItemByScancode(uint16 scancode)
 }
 
 bool
+ActionPanel_ClickUnits(const Widget *widget, uint16 scancode)
+{
+	if (scancode) return false;
+
+	int unit_count = Unit_CountSelected();
+	if (!unit_count) return false;
+
+	ActionPanel_CalculateOptimalLayout(widget);
+	ActionPanel_ClampScrollOffset(widget, unit_count, &s_unitOffsetY);
+	if (ActionPanel_Scroll(widget, unit_count, &s_unitOffsetY))
+		return true;
+
+	if (!(widget->state.buttonState & 0x04)) return false;
+
+	uint16 item = UNIT_INDEX_INVALID;
+	int mouseY;
+	Mouse_TransformToDiv(widget->div, NULL, &mouseY);
+
+	if (mouseY >= widget->offsetY + ActionPanel_List_Height(widget))
+		return false;
+
+	int pi;
+	int pos = 0;
+	const Unit *u = Unit_FirstSelected(&pi);
+	for (; u != NULL; u = Unit_NextSelected(&pi), ++pos) {
+		int x1, y1, x2, y2;
+
+		ActionPanel_List_ButtonDimensions(widget, s_unitOffsetY, pos, &x1, &y1, &x2, &y2, NULL, NULL);
+		if (Mouse_InRegion_Div(widget->div, x1, y1, x2, y2)) {
+			item = u->o.index;
+			break;
+		}
+	}
+
+	if (item == UNIT_INDEX_INVALID) return false;
+
+	bool shift_mod = Input_Test(SCANCODE_LSHIFT);
+	bool ctrl_mod = Input_Test(SCANCODE_LCTRL);
+
+	if (ctrl_mod) {
+		if (shift_mod) {
+			Unit_UnselectType(u->o.type);
+		} else {
+			Unit_UnselectAllButKeepType(u->o.type);
+		}
+	} else {
+		if (shift_mod) {
+			Unit_Unselect(Unit_Get_ByIndex(item));
+		} else {
+			Unit_UnselectAll();
+			Unit_Select(Unit_Get_ByIndex(item));
+		}
+	}
+
+	return true;
+}
+
+bool
 ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode)
 {
 	if (s->o.flags.s.upgrading)
