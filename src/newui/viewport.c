@@ -513,7 +513,7 @@ Viewport_Click(Widget *w)
 		= (viewport_click_action == VIEWPORT_SELECTION_BOX) ? SHAPE_CURSOR_NORMAL
 		: (g_selectionType == SELECTIONTYPE_TARGET) ? SHAPE_CURSOR_TARGET : SHAPE_CURSOR_NORMAL;
 
-	if (w->index == 45) {
+	if (w->index == WIDGET_INDEX_VIEWPORT_FALLBACK) {
 		if ((cursorID != g_cursorSpriteID) && (g_timerGame - l_tickCursor > 10)) {
 			l_tickCursor = g_timerGame;
 			Video_SetCursor(cursorID);
@@ -529,7 +529,7 @@ Viewport_Click(Widget *w)
 	bool perform_context_sensitive_action = false;
 
 	/* Minimap. */
-	if (w->index == 44) {
+	if (w->index == WIDGET_INDEX_MINIMAP) {
 		Mouse_TransformToDiv(SCREENDIV_SIDEBAR, &mouseX, &mouseY);
 
 		const int mapScale = g_scenario.mapScale;
@@ -549,7 +549,7 @@ Viewport_Click(Widget *w)
 
 	/* Context-sensitive mouse cursor. */
 	do {
-		if (w->index != 43) break;
+		if (w->index != WIDGET_INDEX_VIEWPORT) break;
 		if ((cursorID == SHAPE_CURSOR_TARGET) || (g_timerGame - l_tickCursor <= 10)) break;
 
 		if ((viewport_click_action == VIEWPORT_CLICK_NONE) ||
@@ -591,7 +591,7 @@ Viewport_Click(Widget *w)
 			/* Clicking LMB places structure. */
 			Client_Send_PlaceStructure(g_selectionPosition);
 			return true;
-		} else if (w->index == 44) {
+		} else if (w->index == WIDGET_INDEX_MINIMAP) {
 			/* Clicking LMB begins minimap panning. */
 			viewport_click_action = VIEWPORT_PAN_MINIMAP;
 		} else if (viewport_click_action == VIEWPORT_CLICK_NONE) {

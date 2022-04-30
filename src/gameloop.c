@@ -14,6 +14,7 @@
 #include "common_a5.h"
 #include "config.h"
 #include "enhancement.h"
+#include "enum_widget.h"
 #include "explosion.h"
 #include "gui/gui.h"
 #include "house.h"
@@ -223,7 +224,7 @@ GameLoop_Client_ProcessGameInput(bool init_transform, uint16 key)
 
 			if (g_gameConfig.holdControlToZoom) {
 				if (!Input_Test(SCANCODE_LCTRL)) {
-					Widget *w = GUI_Widget_Get_ByIndex(g_widgetLinkedListHead, 5);
+					Widget *w = GUI_Widget_Get_ByIndex(g_widgetLinkedListHead, WIDGET_INDEX_BUILD_PLACE);
 
 					if ((w != NULL) && !w->flags.invisible)
 						GUI_Widget_SpriteTextButton_Click(w);
@@ -313,7 +314,7 @@ GameLoop_Client_ProcessGameInput(bool init_transform, uint16 key)
 
 		default:
 		{
-			Widget *w = GUI_Widget_Get_ByIndex(g_widgetLinkedListHead, 5);
+			Widget *w = GUI_Widget_Get_ByIndex(g_widgetLinkedListHead, WIDGET_INDEX_BUILD_PLACE);
 
 			if ((w != NULL) && !w->flags.invisible)
 				GUI_Widget_ActionPanel_ProcessGameInput(w, key);

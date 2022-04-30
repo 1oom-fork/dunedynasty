@@ -156,11 +156,11 @@ MenuBar_Draw(enum HouseType houseID)
 	Shape_DrawRemap(SHAPE_CREDITS_LABEL, houseID, menubar->width - 128, 0, 0, 0);
 
 	/* Mentat. */
-	w = GUI_Widget_Get_ByIndex(g_widgetLinkedListHead, 1);
+	w = GUI_Widget_Get_ByIndex(g_widgetLinkedListHead, WIDGET_INDEX_MENTAT);
 	GUI_Widget_Draw(w);
 
 	/* Options. */
-	w = GUI_Widget_Get_ByIndex(g_widgetLinkedListHead, 2);
+	w = GUI_Widget_Get_ByIndex(g_widgetLinkedListHead, WIDGET_INDEX_OPTIONS);
 	GUI_Widget_Draw(w);
 
 	Video_SetClippingArea(0, menubar->scaley * 4, TRUE_DISPLAY_WIDTH, menubar->scaley * 9);
