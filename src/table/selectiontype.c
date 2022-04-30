@@ -1,40 +1,82 @@
 /** @file src/table/selectiontype.c Selectiontype table. */
 
 #include "types.h"
+#include "enum_widget.h"
 
 #include "../gui/gui.h"
 
 const SelectionTypeStruct g_table_selectionType[8] = {
-	{ /* 0 */
-		/* visibleWidgets */ { 45, 2, 1, 44, 43, 42, 41, 40, 39, -1 },
+	{ /* SELECTIONTYPE_MENTAT */
+		/* visibleWidgets */ {
+			WIDGET_INDEX_VIEWPORT_FALLBACK,
+			WIDGET_INDEX_OPTIONS, WIDGET_INDEX_MENTAT,
+			WIDGET_INDEX_MINIMAP, WIDGET_INDEX_VIEWPORT,
+			WIDGET_INDEX_SCROLL_DOWN, WIDGET_INDEX_SCROLL_LEFT,
+			WIDGET_INDEX_SCROLL_RIGHT, WIDGET_INDEX_SCROLL_UP,
+			-1
+		},
 		/* defaultWidget  */ 0,
 	},
-	{ /* 1 */
-		/* visibleWidgets */ { 45, 2, 1, 44, 43, 42, 41, 40, 39, -1 },
+	{ /* SELECTIONTYPE_TARGET */
+		/* visibleWidgets */ {
+			WIDGET_INDEX_VIEWPORT_FALLBACK,
+			WIDGET_INDEX_OPTIONS, WIDGET_INDEX_MENTAT,
+			WIDGET_INDEX_MINIMAP, WIDGET_INDEX_VIEWPORT,
+			WIDGET_INDEX_SCROLL_DOWN, WIDGET_INDEX_SCROLL_LEFT,
+			WIDGET_INDEX_SCROLL_RIGHT, WIDGET_INDEX_SCROLL_UP,
+			-1
+		},
 		/* defaultWidget  */ 0,
 	},
-	{ /* 2 */
-		/* visibleWidgets */ { 45, 2, 1, 44, 43, 42, 41, 40, 39, -1 },
+	{ /* SELECTIONTYPE_PLACE */
+		/* visibleWidgets */ {
+			WIDGET_INDEX_VIEWPORT_FALLBACK,
+			WIDGET_INDEX_OPTIONS, WIDGET_INDEX_MENTAT,
+			WIDGET_INDEX_MINIMAP, WIDGET_INDEX_VIEWPORT,
+			WIDGET_INDEX_SCROLL_DOWN, WIDGET_INDEX_SCROLL_LEFT,
+			WIDGET_INDEX_SCROLL_RIGHT, WIDGET_INDEX_SCROLL_UP,
+			-1
+		},
 		/* defaultWidget  */ 0,
 	},
-	{ /* 3 */
-		/* visibleWidgets */ { 45, 2, 1, 44, 43, 42, 41, 40, 39, -1 },
+	{ /* SELECTIONTYPE_UNIT */
+		/* visibleWidgets */ {
+			WIDGET_INDEX_VIEWPORT_FALLBACK,
+			WIDGET_INDEX_OPTIONS, WIDGET_INDEX_MENTAT,
+			WIDGET_INDEX_MINIMAP, WIDGET_INDEX_VIEWPORT,
+			WIDGET_INDEX_SCROLL_DOWN, WIDGET_INDEX_SCROLL_LEFT,
+			WIDGET_INDEX_SCROLL_RIGHT, WIDGET_INDEX_SCROLL_UP,
+			-1
+		},
 		/* defaultWidget  */ 0,
 	},
-	{ /* 4 */
-		/* visibleWidgets */ { 45, 2, 1, 44, 43, 42, 41, 40, 39, -1 },
-		/* defaultWidget  */ 0,
+	{ /* SELECTIONTYPE_STRUCTURE */
+		/* visibleWidgets */ {
+			WIDGET_INDEX_VIEWPORT_FALLBACK,
+			WIDGET_INDEX_OPTIONS, WIDGET_INDEX_MENTAT,
+			WIDGET_INDEX_MINIMAP, WIDGET_INDEX_VIEWPORT,
+			WIDGET_INDEX_SCROLL_DOWN, WIDGET_INDEX_SCROLL_LEFT,
+			WIDGET_INDEX_SCROLL_RIGHT, WIDGET_INDEX_SCROLL_UP,
+			-1
+		},
 	},
-	{ /* 5 */
+	{ /* SELECTIONTYPE_DEBUG */
 		/* visibleWidgets */ { 1, 2, 12, 13, 14, 15, 16, 17, 26, 27, 28, 29, -1 },
 		/* defaultWidget  */ 2,
 	},
-	{ /* 6 */
+	{ /* SELECTIONTYPE_UNKNOWN6 */
 		/* visibleWidgets */ { 1, 2, 18, 20, 19, 21, 22, 23, 24, 25, 26, 27, 28, -1 },
 		/* defaultWidget  */ 2,
 	},
-	{ /* 7 */
-		/* visibleWidgets */ { 45, 2, 1, 44, 43, 42, 41, 40, 39, -1 },
+	{ /* SELECTIONTYPE_INTRO */
+		/* visibleWidgets */ {
+			WIDGET_INDEX_VIEWPORT_FALLBACK,
+			WIDGET_INDEX_OPTIONS, WIDGET_INDEX_MENTAT,
+			WIDGET_INDEX_MINIMAP, WIDGET_INDEX_VIEWPORT,
+			WIDGET_INDEX_SCROLL_DOWN, WIDGET_INDEX_SCROLL_LEFT,
+			WIDGET_INDEX_SCROLL_RIGHT, WIDGET_INDEX_SCROLL_UP,
+			-1
+		},
 		/* defaultWidget  */ 0,
 	}
 };
