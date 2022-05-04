@@ -752,6 +752,8 @@ ActionPanel_ClickFactory(const Widget *widget, Structure *s, uint16 scancode)
 	else {
 		if (ActionPanel_Scroll(widget, g_factoryWindowTotal, &s->factoryOffsetY))
 			return true;
+		else if (!(widget->state.buttonState & 0x44))
+			return false;
 
 		item = ActionPanel_GetClickedItem(widget, g_factoryWindowTotal, s->factoryOffsetY);
 	}
@@ -878,6 +880,8 @@ ActionPanel_ClickStarport(const Widget *widget, Structure *s, uint16 scancode)
 	if (scancode == 0) {
 		if (ActionPanel_Scroll(widget, g_factoryWindowTotal, &s->factoryOffsetY))
 			return true;
+		else if (!(widget->state.buttonState & 0x44))
+			return false;
 
 		item = ActionPanel_GetClickedItem(widget, g_factoryWindowTotal, s->factoryOffsetY);
 	}
