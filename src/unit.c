@@ -156,6 +156,17 @@ Unit_Unselect(const Unit *unit)
 }
 
 void
+Unit_SelectType(enum UnitType type)
+{
+	PoolFindStruct find;
+	Unit *u = Unit_FindFirst(&find, g_playerHouseID, type);
+	while (u != NULL) {
+		Unit_AddSelected(u);
+		u = Unit_FindNext(&find);
+	}
+}
+
+void
 Unit_UnselectType(enum UnitType type)
 {
 	for (int i = 0; i < MAX_SELECTABLE_UNITS; i++) {

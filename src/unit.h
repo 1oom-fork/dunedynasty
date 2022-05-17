@@ -136,6 +136,7 @@ extern bool Unit_AnySelected(void);
 extern uint16 Unit_CountSelected(void);
 extern void Unit_AddSelected(Unit *unit);
 extern void Unit_Unselect(const Unit *unit);
+extern void Unit_SelectType(enum UnitType type);
 extern void Unit_UnselectType(enum UnitType type);
 extern void Unit_UnselectAllButKeepType(enum UnitType type);
 extern void Unit_UnselectAll(void);
